@@ -14,3 +14,11 @@
 12. `python get_tool_list_from_galaxy.py --include_tool_panel_id -g https://mississippi.snv.jussieu.fr/ -o mississippi_tool_list_panelIDs.yml`
 
 The two files generated are in tool_lists
+
+Then
+
+Grep `(^  tool_shed_url.+)\r` replace `\1\r  install_resolver_dependencies: True\r`
+
+to generate the file `mississippi_tool_list_with_ install_resolver_dependencies.yml`
+
+we have also to include the datamanagers tools in the list !
