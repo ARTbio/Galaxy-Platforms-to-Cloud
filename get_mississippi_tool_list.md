@@ -21,4 +21,30 @@ Grep `(^  tool_shed_url.+)\r` replace `\1\r  install_resolver_dependencies: True
 
 to generate the file `mississippi_tool_list_with_ install_resolver_dependencies.yml`
 
-we have also to include the datamanagers tools in the list !
+### We have also to include the datamanagers tools in the list !
+
+For instance, in https://mississippi.snv.jussieu.fr, we have:
+
+- BWA index - builder
+- BWA-MEM index - builder
+- Bowtie index - builder
+- Bowtie2 index - builder
+- Create DBKey and Reference Genome - fetching
+- HISAT2 index - builder
+- SAM FASTA index - builder
+- TwoBit - builder
+- rnastar index - builder
+
+and for instance, a typical entry for a data_manager tool in the yml list is:
+
+```
+- name: data_manager_bowtie2_index_builder
+  owner: devteam
+  revisions:
+  - e87aeff2cf88
+  tool_panel_section_label: null
+  tool_shed_url: https://toolshed.g2.bx.psu.edu/
+  install_resolver_dependencies: True
+```
+and we can probably ignore the revisions key to get the latest revision
+
