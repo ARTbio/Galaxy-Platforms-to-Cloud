@@ -77,7 +77,6 @@ But apparently, even skipping nfs,noauto, the volume does not mount automaticall
 - option manual mounting:
 `sudo mount -t nfs4 -o proto=tcp,port=2049 10.132.0.2:/ /home/galaxy/galaxy-slurm/galaxy-slurm-data` (from the "/home/galaxy/galaxy-slurm/mount_nfs.sh" script
 
-**Note: currently I don't get it working with nfs4 !**
 
 OK, this worked for the client 10.132.0.3, I test by repeating on 10.132.0.4
 
