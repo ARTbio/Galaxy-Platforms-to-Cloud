@@ -10,7 +10,7 @@ Note that the /export directory will be filled by GalaxyKickStart if it is creat
 - For server machine, `apt-get install nfs-kernel-server nfs-common`
 - For client machine (to be set later) `apt-get install nfs-common`
 
-### On server side
+### On server side (node 0)
 - `apt-get install nfs-kernel-server nfs-common`
 - Edit `/etc/exports` and add the lines
 
@@ -24,6 +24,9 @@ Note that the /export directory will be filled by GalaxyKickStart if it is creat
 /export/etc/postgresql/9.3/main 10.132.0.0/24(rw,nohide,insecure,no_subtree_check)
 ```
 
+- for docker-slurm, manually add to /etc/exports :
+`/export/galaxy 10.132.0.0/24(rw,nohide,insecure,no_subtree_check)`
+
 *note that bad ip range syntax cause problem initially (was 10.132.0.2/255.255.255.255)*
 
 - Be aware of the add-in in /etc/fstab file triggered by GKS
@@ -35,6 +38,9 @@ Note that the /export directory will be filled by GalaxyKickStart if it is creat
 /export//home/galaxy/galaxy/database /home/galaxy/galaxy/database none bind 0 0
 /export//etc/postgresql/9.3/main /etc/postgresql/9.3/main none bind 0 0
 ```
+
+- for docker-slurm, manually add to /etc/fstab:
+`/export/home/galaxy /home/galaxy none bind 0 0` (maybe not necessary if just playing with nfs sharing, `to be tested`; in any case, the mounting point /export/home/galaxy is created by GKG) 
 
 - Be aware of the export mechanism triggered by GKG when it found an /export directory (move.data role executed when this directory is present on the system)
 ```
