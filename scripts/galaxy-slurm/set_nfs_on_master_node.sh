@@ -25,4 +25,3 @@ echo "/mnt/disks/galaxy-data//home/galaxy/galaxy/database /nfs_export/galaxy/gal
 echo "/nfs_export 10.132.0.0/24(rw,fsid=0,no_subtree_check)" | tee -a /etc/exports
 echo "/nfs_export/galaxy 10.132.0.0/24(rw,fsid=1,nohide,insecure,no_subtree_check,no_root_squash)" | tee -a /etc/exports
 
-# see http://unix.stackexchange.com/questions/42131/how-to-properly-export-and-import-nfs-shares-that-have-subdirectories-as-mount-p
