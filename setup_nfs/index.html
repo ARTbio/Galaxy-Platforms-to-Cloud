@@ -61,7 +61,9 @@
     
         <ul>
         
-            <li><a class="toctree-l3" href="#test-on-gce-with-three-instances">test on GCE with three instances</a></li>
+            <li><a class="toctree-l3" href="#on-slurmd-slurmctld-control-node-side-ie-galaxykickstart-instance">On slurmd &amp; slurmctld control node side (ie GalaxyKickStart instance)</a></li>
+        
+            <li><a class="toctree-l3" href="#on-slurmd-slave-nodes-sides">On slurmd slave nodes sides</a></li>
         
         </ul>
     
@@ -117,61 +119,30 @@
             <div class="section">
               
                 <h1 id="set-up-a-simple-nfs-for-the-virtual-cluster">Set Up a simple NFS for the virtual cluster</h1>
-<h2 id="test-on-gce-with-three-instances">test on GCE with three instances</h2>
+<h2 id="on-slurmd-slurmctld-control-node-side-ie-galaxykickstart-instance">On slurmd &amp; slurmctld control node side (ie GalaxyKickStart instance)</h2>
 <ul>
-<li>
-<p>Create an export directory at root. <code>mkdir /export</code>
-Note that the /export directory will be filled by GalaxyKickStart if it is created before running ansible-playbook</p>
-</li>
-<li>
-<p>server machine has internal IP address 10.132.0.2</p>
-</li>
-<li>client machines have internal IP addresses 10.132.0.3 and 10.132.0.4</li>
-<li>For server machine, <code>apt-get install nfs-kernel-server nfs-common</code></li>
-<li>For client machine (to be set later) <code>apt-get install nfs-common</code></li>
-</ul>
-<h3 id="on-server-side-slurm-control-node">On server side (slurm control node)</h3>
-<ul>
-<li>
-<p>Edit* and Run as root the script <a href="https://github.com/ARTbio/PtC/blob/master/scripts/galaxy-slurm/set_nfs_on_master_node.sh">set_nfs_on_master_node.sh</a> that will</p>
-<ul>
+<li>Edit* and Run as root the script <a href="https://github.com/ARTbio/PtC/blob/master/scripts/galaxy-slurm/set_nfs_on_master_node.sh">set_nfs_on_master_node.sh</a> that will<ul>
 <li>install and run <code>nfs-kernel-server</code> and <code>nfs-common</code> packages.</li>
 <li>create <code>/nfs_export</code> and <code>/nfs_export/galaxy</code> directories (for bind mounts of /home/galaxy and other file system bind mounted within /home/galaxy)</li>
 <li>change the <code>/etc/fstab</code> file for making permanent the bind mounts</li>
 <li>modify the <code>/etc/exports</code> file for appropriate sharing</li>
+<li>restart NFS server ( <code>sudo /etc/init.d/nfs-kernel-server restart</code>)</li>
 <li>*Be aware that the current scenario is played after GKS galaxy install and export of permanent Galaxy data on an extra mounted volume (see the <code>$GKS_EXPORT_DIR</code> variable in the script). The <code>$IP_RANGE</code> should also been edited before running the script, according to your slurm network</li>
 <li>Be aware that GKS modified the <code>/etc/fstab</code> file prior this script is permanent data was chosen to be exported on permanent or snapshotable volume. </li>
 </ul>
 </li>
-<li>
-<p>Start or restart the nfs server <code>sudo /etc/init.d/nfs-kernel-server restart</code></p>
-</li>
-<li>$ exportfs -a ? see whether this is required #####</li>
-<li>Probably need to have persistent iptables: (remain to be tested)</li>
 </ul>
-<pre><code>apt-get update &amp;&amp; apt-get install iptables-persistent
-</code></pre>
-
-<p>And add the following chains to /etc/iptables/rules.v4</p>
-<pre><code>-A INPUT -p tcp -m multiport --dports 2049 -m state --state NEW,ESTABLISHED -j ACCEPT
--A OUTPUT -p tcp -m multiport --sports 2049 -m state --state NEW,ESTABLISHED -j ACCEPT
--A OUTPUT -p tcp -m multiport --dports 2049 -m state --state NEW,ESTABLISHED -j ACCEPT
-</code></pre>
-
-<p>This manipulation comes from below where a port 2049 is specified in the mounting. Test whether is would work otherwise (even without iptables)</p>
-<h3 id="on-client-side">On client side</h3>
+<h2 id="on-slurmd-slave-nodes-sides">On slurmd slave nodes sides</h2>
 <ul>
-<li><code>apt-get install nfs-common</code></li>
-<li>create /galaxy/galaxy-slurm directory <code>mkdir -p /home/galaxy/galaxy-slurm/</code> (owner will be root)</li>
-<li>create the mounting point for shared nfs volume:
-<code>mkdir /home/galaxy/galaxy-slurm/galaxy-slurm-data/</code></li>
-<li>Add this line to /etc/fstab of client machines: 
-<code>10.132.0.2:/export   /home/galaxy/galaxy-slurm/galaxy-slurm-data   nfs    user    0   0</code>
-But apparently, even skipping nfs,noauto, the volume does not mount automatically at boot. Probably better to comment this line for the moment in fstab</li>
-<li>option manual mounting:
-<code>sudo mount -t nfs4 -o proto=tcp,port=2049 10.132.0.2:/ /home/galaxy/galaxy-slurm/galaxy-slurm-data</code> (from the "/home/galaxy/galaxy-slurm/mount_nfs.sh" script</li>
+<li>
+<p>Edit and run as root the script <a href="https://github.com/ARTbio/Galaxy-Platforms-to-Cloud/blob/master/scripts/galaxy-slurm/slurm_node_up.sh"></a> that will:</p>
+</li>
+<li>
+<p><code>apt-get install nfs-common</code></p>
+</li>
+<li>create the galaxy 1450:100 user, as well as the mounting point for shared nfs volume (<code>/home/galaxy</code>). <em>Still to be scripted.</em></li>
+<li>mount the shared /home/galaxy volume as well as its bind mounted sub file systems. see the <a href="https://github.com/ARTbio/Galaxy-Platforms-to-Cloud/blob/master/scripts/galaxy-slurm/slurm_node_up.sh">slurm_node_up.sh</a> script.</li>
 </ul>
-<p>OK, this worked for the client 10.132.0.3, I test by repeating on 10.132.0.4</p>
               
             </div>
           </div>
