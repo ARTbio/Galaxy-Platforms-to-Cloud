@@ -1,0 +1,8 @@
+site_name: Galaxy-Platforms-to-Cloud
+pages:
+ - Home: index.md
+ - Set up NFS: setup_nfs.md
+ - Get Galaxy tool lists: get_mississippi_tool_list.md
+ - docker-slurm-on-slaves.md
+ - Install Docker: install_docker.md
+theme: readthedocs
