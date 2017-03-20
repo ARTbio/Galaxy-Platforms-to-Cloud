@@ -2,6 +2,7 @@
 
 available in [Docker Registry](https://hub.docker.com/r/mvdbeek/galaxy-slurm/)
 
+** This piece of documentation is deprecated since we chose to run slurm directly on slave nodes, without galaxy-slurm **
 
 ## set up a docker network with master and slave nodes
 

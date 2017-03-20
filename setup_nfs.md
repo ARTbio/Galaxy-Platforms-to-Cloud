@@ -10,26 +10,15 @@ Note that the /export directory will be filled by GalaxyKickStart if it is creat
 - For server machine, `apt-get install nfs-kernel-server nfs-common`
 - For client machine (to be set later) `apt-get install nfs-common`
 
-### On server side (node 0)
-- `apt-get install nfs-kernel-server nfs-common`
-- Edit `/etc/exports` and add the lines
+### On server side (slurm control node)
 
-```
-/export 10.132.0.0/24(rw,fsid=0,no_subtree_check)
-/export/home/galaxy/tool_dependencies 10.132.0.0/24(rw,nohide,insecure,no_subtree_check)
-/export/home/galaxy/galaxy/../shed_tools 10.132.0.0/24(rw,nohide,insecure,no_subtree_check)
-/export/home/galaxy/galaxy/tool-data 10.132.0.0/24(rw,nohide,insecure,no_subtree_check)
-/export/home/galaxy/galaxy/config 10.132.0.0/24(rw,nohide,insecure,no_subtree_check)
-/export/home/galaxy/galaxy/database 10.132.0.0/24(rw,nohide,insecure,no_subtree_check)
-/export/etc/postgresql/9.3/main 10.132.0.0/24(rw,nohide,insecure,no_subtree_check)
-```
-
-- for docker-slurm, manually add to /etc/exports :
-`/export/galaxy 10.132.0.0/24(rw,nohide,insecure,no_subtree_check)`
-
-*note that bad ip range syntax cause problem initially (was 10.132.0.2/255.255.255.255)*
-
-- Be aware of the add-in in /etc/fstab file triggered by GKS
+- Edit* and Run as root the script [set_nfs_on_master_node.sh](https://github.com/ARTbio/PtC/blob/master/scripts/galaxy-slurm/set_nfs_on_master_node.sh) that will
+    - install and run `nfs-kernel-server` and `nfs-common` packages.
+    - create `/nfs_export` and `/nfs_export/galaxy` directories (for bind mounts of /home/galaxy and other file system bind mounted within /home/galaxy)
+    - change the /etc/fstab file for making permanent the bind mounts
+    - modify the /etc/exports file for appropriate sharing
+    - *Be aware that the current scenario is played after GKS galaxy install and export of permanent Galaxy data on an extra mounted volume (see the $GKS_EXPORT_DIR variable in the script). The $IP_RANGE should also been edited before running the script, according to your slurm network
+    - Be aware of the add-in in /etc/fstab file triggered by GKS
 ```
 /export//home/galaxy/tool_dependencies /home/galaxy/tool_dependencies none bind 0 0
 /export//home/galaxy/galaxy/../shed_tools /home/galaxy/galaxy/../shed_tools none bind 0 0
