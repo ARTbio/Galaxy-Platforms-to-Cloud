@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # as root
 
-EXTRA_VOLUME=galaxy-data
+EXTRA_VOLUME=galaxy-data # adapt to the name of the GCE extra volume available on the web interface
 # Be careful to point to the correct interface (here sdb with one extra volume)
 DEVICE=/dev/sdb
 

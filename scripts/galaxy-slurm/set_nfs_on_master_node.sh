@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+#############
+## This script should be run after gce_warmup.sh that install supervisor, supervisorctl,
+## supervisorctl,slurmctl and slurmd via GalaxyKickStart
+#############
+
 # execute as root on the master slurm node
 # Note that this script is for nfs set up on a slurm cluster w/o docker
 # After running GalaxyKickStart and persistent data
@@ -36,3 +42,6 @@ echo "/nfs_export $IP_RANGE(rw,fsid=0,no_subtree_check)" | tee -a /etc/exports
 echo "/nfs_export/galaxy $IP_RANGE(rw,fsid=1,nohide,insecure,no_subtree_check,no_root_squash)" | tee -a /etc/exports
 /etc/init.d/nfs-kernel-server restart
 
+# As GalaxyKickStart did its job, we can hard link slurmd.conf and munge.key
+ln /etc/slurm-llnl/slurm.conf /home/galaxy/slurm.conf
+ln /etc/munge/munge.key /home/galaxy/munge.key
