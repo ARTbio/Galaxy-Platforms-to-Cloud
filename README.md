@@ -1,2 +1,2 @@
 # PtC
-Developments for deploying Galaxy servers in local or cloud infrastructures
+Developments for deploying Galaxy servers with slurm clusters in local or cloud infrastructures
