@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    
+    <url>
+     <loc>/</loc>
+     <lastmod>2017-03-20</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>/setup_nfs/</loc>
+     <lastmod>2017-03-20</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>/get_mississippi_tool_list/</loc>
+     <lastmod>2017-03-20</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>/docker-slurm-on-slaves/</loc>
+     <lastmod>2017-03-20</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>/install_docker/</loc>
+     <lastmod>2017-03-20</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+</urlset>

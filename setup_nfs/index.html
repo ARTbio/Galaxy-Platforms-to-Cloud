@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Set up NFS - Galaxy-Platforms-to-Cloud</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Set up NFS";
+    var mkdocs_page_input_path = "setup_nfs.md";
+    var mkdocs_page_url = "/setup_nfs/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Galaxy-Platforms-to-Cloud</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Set up NFS</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#set-up-a-simple-nfs-for-the-virtual-cluster">Set Up a simple NFS for the virtual cluster</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#test-on-gce-with-three-instances">test on GCE with three instances</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../get_mississippi_tool_list/">Get Galaxy tool lists</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../docker-slurm-on-slaves/">Docker slurm on slaves</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../install_docker/">Install Docker</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Galaxy-Platforms-to-Cloud</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Set up NFS</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="set-up-a-simple-nfs-for-the-virtual-cluster">Set Up a simple NFS for the virtual cluster</h1>
+<h2 id="test-on-gce-with-three-instances">test on GCE with three instances</h2>
+<ul>
+<li>
+<p>Create an export directory at root. <code>mkdir /export</code>
+Note that the /export directory will be filled by GalaxyKickStart if it is created before running ansible-playbook</p>
+</li>
+<li>
+<p>server machine has internal IP address 10.132.0.2</p>
+</li>
+<li>client machines have internal IP addresses 10.132.0.3 and 10.132.0.4</li>
+<li>For server machine, <code>apt-get install nfs-kernel-server nfs-common</code></li>
+<li>For client machine (to be set later) <code>apt-get install nfs-common</code></li>
+</ul>
+<h3 id="on-server-side-slurm-control-node">On server side (slurm control node)</h3>
+<ul>
+<li>
+<p>Edit* and Run as root the script <a href="https://github.com/ARTbio/PtC/blob/master/scripts/galaxy-slurm/set_nfs_on_master_node.sh">set_nfs_on_master_node.sh</a> that will</p>
+<ul>
+<li>install and run <code>nfs-kernel-server</code> and <code>nfs-common</code> packages.</li>
+<li>create <code>/nfs_export</code> and <code>/nfs_export/galaxy</code> directories (for bind mounts of /home/galaxy and other file system bind mounted within /home/galaxy)</li>
+<li>change the <code>/etc/fstab</code> file for making permanent the bind mounts</li>
+<li>modify the <code>/etc/exports</code> file for appropriate sharing</li>
+<li>*Be aware that the current scenario is played after GKS galaxy install and export of permanent Galaxy data on an extra mounted volume (see the <code>$GKS_EXPORT_DIR</code> variable in the script). The <code>$IP_RANGE</code> should also been edited before running the script, according to your slurm network</li>
+<li>Be aware that GKS modified the <code>/etc/fstab</code> file prior this script is permanent data was chosen to be exported on permanent or snapshotable volume. </li>
+</ul>
+</li>
+<li>
+<p>Start or restart the nfs server <code>sudo /etc/init.d/nfs-kernel-server restart</code></p>
+</li>
+<li>$ exportfs -a ? see whether this is required #####</li>
+<li>Probably need to have persistent iptables: (remain to be tested)</li>
+</ul>
+<pre><code>apt-get update &amp;&amp; apt-get install iptables-persistent
+</code></pre>
+
+<p>And add the following chains to /etc/iptables/rules.v4</p>
+<pre><code>-A INPUT -p tcp -m multiport --dports 2049 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A OUTPUT -p tcp -m multiport --sports 2049 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A OUTPUT -p tcp -m multiport --dports 2049 -m state --state NEW,ESTABLISHED -j ACCEPT
+</code></pre>
+
+<p>This manipulation comes from below where a port 2049 is specified in the mounting. Test whether is would work otherwise (even without iptables)</p>
+<h3 id="on-client-side">On client side</h3>
+<ul>
+<li><code>apt-get install nfs-common</code></li>
+<li>create /galaxy/galaxy-slurm directory <code>mkdir -p /home/galaxy/galaxy-slurm/</code> (owner will be root)</li>
+<li>create the mounting point for shared nfs volume:
+<code>mkdir /home/galaxy/galaxy-slurm/galaxy-slurm-data/</code></li>
+<li>Add this line to /etc/fstab of client machines: 
+<code>10.132.0.2:/export   /home/galaxy/galaxy-slurm/galaxy-slurm-data   nfs    user    0   0</code>
+But apparently, even skipping nfs,noauto, the volume does not mount automatically at boot. Probably better to comment this line for the moment in fstab</li>
+<li>option manual mounting:
+<code>sudo mount -t nfs4 -o proto=tcp,port=2049 10.132.0.2:/ /home/galaxy/galaxy-slurm/galaxy-slurm-data</code> (from the "/home/galaxy/galaxy-slurm/mount_nfs.sh" script</li>
+</ul>
+<p>OK, this worked for the client 10.132.0.3, I test by repeating on 10.132.0.4</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../get_mississippi_tool_list/" class="btn btn-neutral float-right" title="Get Galaxy tool lists">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../get_mississippi_tool_list/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script src="../js/theme.js"></script>
+
+</body>
+</html>

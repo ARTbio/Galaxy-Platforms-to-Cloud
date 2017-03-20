@@ -1,0 +1,109 @@
+{
+    "docs": [
+        {
+            "location": "/", 
+            "text": "PtC\n\n\nDevelopments for deploying Galaxy servers with slurm clusters in local or cloud infrastructures", 
+            "title": "Home"
+        }, 
+        {
+            "location": "/#ptc", 
+            "text": "Developments for deploying Galaxy servers with slurm clusters in local or cloud infrastructures", 
+            "title": "PtC"
+        }, 
+        {
+            "location": "/setup_nfs/", 
+            "text": "Set Up a simple NFS for the virtual cluster\n\n\ntest on GCE with three instances\n\n\n\n\n\n\nCreate an export directory at root. \nmkdir /export\n\nNote that the /export directory will be filled by GalaxyKickStart if it is created before running ansible-playbook\n\n\n\n\n\n\nserver machine has internal IP address 10.132.0.2\n\n\n\n\nclient machines have internal IP addresses 10.132.0.3 and 10.132.0.4\n\n\nFor server machine, \napt-get install nfs-kernel-server nfs-common\n\n\nFor client machine (to be set later) \napt-get install nfs-common\n\n\n\n\nOn server side (slurm control node)\n\n\n\n\n\n\nEdit* and Run as root the script \nset_nfs_on_master_node.sh\n that will\n\n\n\n\ninstall and run \nnfs-kernel-server\n and \nnfs-common\n packages.\n\n\ncreate \n/nfs_export\n and \n/nfs_export/galaxy\n directories (for bind mounts of /home/galaxy and other file system bind mounted within /home/galaxy)\n\n\nchange the \n/etc/fstab\n file for making permanent the bind mounts\n\n\nmodify the \n/etc/exports\n file for appropriate sharing\n\n\n*Be aware that the current scenario is played after GKS galaxy install and export of permanent Galaxy data on an extra mounted volume (see the \n$GKS_EXPORT_DIR\n variable in the script). The \n$IP_RANGE\n should also been edited before running the script, according to your slurm network\n\n\nBe aware that GKS modified the \n/etc/fstab\n file prior this script is permanent data was chosen to be exported on permanent or snapshotable volume. \n\n\n\n\n\n\n\n\nStart or restart the nfs server \nsudo /etc/init.d/nfs-kernel-server restart\n\n\n\n\n$ exportfs -a ? see whether this is required #####\n\n\nProbably need to have persistent iptables: (remain to be tested)\n\n\n\n\napt-get update \n apt-get install iptables-persistent\n\n\n\n\nAnd add the following chains to /etc/iptables/rules.v4\n\n\n-A INPUT -p tcp -m multiport --dports 2049 -m state --state NEW,ESTABLISHED -j ACCEPT\n-A OUTPUT -p tcp -m multiport --sports 2049 -m state --state NEW,ESTABLISHED -j ACCEPT\n-A OUTPUT -p tcp -m multiport --dports 2049 -m state --state NEW,ESTABLISHED -j ACCEPT\n\n\n\n\nThis manipulation comes from below where a port 2049 is specified in the mounting. Test whether is would work otherwise (even without iptables)\n\n\nOn client side\n\n\n\n\napt-get install nfs-common\n\n\ncreate /galaxy/galaxy-slurm directory \nmkdir -p /home/galaxy/galaxy-slurm/\n (owner will be root)\n\n\ncreate the mounting point for shared nfs volume:\n\nmkdir /home/galaxy/galaxy-slurm/galaxy-slurm-data/\n\n\nAdd this line to /etc/fstab of client machines: \n\n10.132.0.2:/export   /home/galaxy/galaxy-slurm/galaxy-slurm-data   nfs    user    0   0\n\nBut apparently, even skipping nfs,noauto, the volume does not mount automatically at boot. Probably better to comment this line for the moment in fstab\n\n\noption manual mounting:\n\nsudo mount -t nfs4 -o proto=tcp,port=2049 10.132.0.2:/ /home/galaxy/galaxy-slurm/galaxy-slurm-data\n (from the \"/home/galaxy/galaxy-slurm/mount_nfs.sh\" script\n\n\n\n\nOK, this worked for the client 10.132.0.3, I test by repeating on 10.132.0.4", 
+            "title": "Set up NFS"
+        }, 
+        {
+            "location": "/setup_nfs/#set-up-a-simple-nfs-for-the-virtual-cluster", 
+            "text": "", 
+            "title": "Set Up a simple NFS for the virtual cluster"
+        }, 
+        {
+            "location": "/setup_nfs/#test-on-gce-with-three-instances", 
+            "text": "Create an export directory at root.  mkdir /export \nNote that the /export directory will be filled by GalaxyKickStart if it is created before running ansible-playbook    server machine has internal IP address 10.132.0.2   client machines have internal IP addresses 10.132.0.3 and 10.132.0.4  For server machine,  apt-get install nfs-kernel-server nfs-common  For client machine (to be set later)  apt-get install nfs-common", 
+            "title": "test on GCE with three instances"
+        }, 
+        {
+            "location": "/setup_nfs/#on-server-side-slurm-control-node", 
+            "text": "Edit* and Run as root the script  set_nfs_on_master_node.sh  that will   install and run  nfs-kernel-server  and  nfs-common  packages.  create  /nfs_export  and  /nfs_export/galaxy  directories (for bind mounts of /home/galaxy and other file system bind mounted within /home/galaxy)  change the  /etc/fstab  file for making permanent the bind mounts  modify the  /etc/exports  file for appropriate sharing  *Be aware that the current scenario is played after GKS galaxy install and export of permanent Galaxy data on an extra mounted volume (see the  $GKS_EXPORT_DIR  variable in the script). The  $IP_RANGE  should also been edited before running the script, according to your slurm network  Be aware that GKS modified the  /etc/fstab  file prior this script is permanent data was chosen to be exported on permanent or snapshotable volume.      Start or restart the nfs server  sudo /etc/init.d/nfs-kernel-server restart   $ exportfs -a ? see whether this is required #####  Probably need to have persistent iptables: (remain to be tested)   apt-get update   apt-get install iptables-persistent  And add the following chains to /etc/iptables/rules.v4  -A INPUT -p tcp -m multiport --dports 2049 -m state --state NEW,ESTABLISHED -j ACCEPT\n-A OUTPUT -p tcp -m multiport --sports 2049 -m state --state NEW,ESTABLISHED -j ACCEPT\n-A OUTPUT -p tcp -m multiport --dports 2049 -m state --state NEW,ESTABLISHED -j ACCEPT  This manipulation comes from below where a port 2049 is specified in the mounting. Test whether is would work otherwise (even without iptables)", 
+            "title": "On server side (slurm control node)"
+        }, 
+        {
+            "location": "/setup_nfs/#on-client-side", 
+            "text": "apt-get install nfs-common  create /galaxy/galaxy-slurm directory  mkdir -p /home/galaxy/galaxy-slurm/  (owner will be root)  create the mounting point for shared nfs volume: mkdir /home/galaxy/galaxy-slurm/galaxy-slurm-data/  Add this line to /etc/fstab of client machines:  10.132.0.2:/export   /home/galaxy/galaxy-slurm/galaxy-slurm-data   nfs    user    0   0 \nBut apparently, even skipping nfs,noauto, the volume does not mount automatically at boot. Probably better to comment this line for the moment in fstab  option manual mounting: sudo mount -t nfs4 -o proto=tcp,port=2049 10.132.0.2:/ /home/galaxy/galaxy-slurm/galaxy-slurm-data  (from the \"/home/galaxy/galaxy-slurm/mount_nfs.sh\" script   OK, this worked for the client 10.132.0.3, I test by repeating on 10.132.0.4", 
+            "title": "On client side"
+        }, 
+        {
+            "location": "/get_mississippi_tool_list/", 
+            "text": "Procedure to get tool list from a Galaxy instance\n\n\n\n\nInstall pip (version pip 9.0.1)\n\n\nInstall virtualenv \npip install virtualenv\n\n\nvirtualenv .venv\n\n\nsource .venv/bin/activate\n\n\npip install requests\n\n\npip install PyYAML\n\n\npip install virtualenv\n\n\ngit clone https://github.com/galaxyproject/ephemeris.git\n\n\ncd ephemeris\n\n\npython get_tool_list_from_galaxy.py --help\n\n\npython get_tool_list_from_galaxy.py -g https://mississippi.snv.jussieu.fr/ -o mississippi_tool_list.yml\n\n\npython get_tool_list_from_galaxy.py --include_tool_panel_id -g https://mississippi.snv.jussieu.fr/ -o mississippi_tool_list_panelIDs.yml\n\n\n\n\nThe two files generated are in tool_lists\n\n\nThen\n\n\nGrep \n(^  tool_shed_url.+)\\r\n replace \n\\1\\r  install_resolver_dependencies: True\\r\n\n\nto generate the file \nmississippi_tool_list_with_ install_resolver_dependencies.yml\n\n\nWe have also to include the datamanagers tools in the list !\n\n\nFor instance, in https://mississippi.snv.jussieu.fr, we have:\n\n\n\n\nBWA index - builder\n\n\nBWA-MEM index - builder\n\n\nBowtie index - builder\n\n\nBowtie2 index - builder\n\n\nCreate DBKey and Reference Genome - fetching\n\n\nHISAT2 index - builder\n\n\nSAM FASTA index - builder\n\n\nTwoBit - builder\n\n\nrnastar index - builder\n\n\n\n\nand for instance, a typical entry for a data_manager tool in the yml list is:\n\n\n- name: data_manager_bowtie2_index_builder\n  owner: devteam\n  revisions:\n  - e87aeff2cf88\n  tool_panel_section_label: null\n  tool_shed_url: https://toolshed.g2.bx.psu.edu/\n  install_resolver_dependencies: True\n\n\n\n\nand we can probably ignore the revisions key to get the latest revision", 
+            "title": "Get Galaxy tool lists"
+        }, 
+        {
+            "location": "/get_mississippi_tool_list/#procedure-to-get-tool-list-from-a-galaxy-instance", 
+            "text": "Install pip (version pip 9.0.1)  Install virtualenv  pip install virtualenv  virtualenv .venv  source .venv/bin/activate  pip install requests  pip install PyYAML  pip install virtualenv  git clone https://github.com/galaxyproject/ephemeris.git  cd ephemeris  python get_tool_list_from_galaxy.py --help  python get_tool_list_from_galaxy.py -g https://mississippi.snv.jussieu.fr/ -o mississippi_tool_list.yml  python get_tool_list_from_galaxy.py --include_tool_panel_id -g https://mississippi.snv.jussieu.fr/ -o mississippi_tool_list_panelIDs.yml   The two files generated are in tool_lists  Then  Grep  (^  tool_shed_url.+)\\r  replace  \\1\\r  install_resolver_dependencies: True\\r  to generate the file  mississippi_tool_list_with_ install_resolver_dependencies.yml", 
+            "title": "Procedure to get tool list from a Galaxy instance"
+        }, 
+        {
+            "location": "/get_mississippi_tool_list/#we-have-also-to-include-the-datamanagers-tools-in-the-list", 
+            "text": "For instance, in https://mississippi.snv.jussieu.fr, we have:   BWA index - builder  BWA-MEM index - builder  Bowtie index - builder  Bowtie2 index - builder  Create DBKey and Reference Genome - fetching  HISAT2 index - builder  SAM FASTA index - builder  TwoBit - builder  rnastar index - builder   and for instance, a typical entry for a data_manager tool in the yml list is:  - name: data_manager_bowtie2_index_builder\n  owner: devteam\n  revisions:\n  - e87aeff2cf88\n  tool_panel_section_label: null\n  tool_shed_url: https://toolshed.g2.bx.psu.edu/\n  install_resolver_dependencies: True  and we can probably ignore the revisions key to get the latest revision", 
+            "title": "We have also to include the datamanagers tools in the list !"
+        }, 
+        {
+            "location": "/docker-slurm-on-slaves/", 
+            "text": "Testing the mvdbeek/galaxy-slurm docker container\n\n\navailable in \nDocker Registry\n\n\n This piece of documentation is deprecated since we chose to run slurm directly on slave nodes, without galaxy-slurm \n\n\nset up a docker network with master and slave nodes\n\n\nthe script net.sh:\n\n\nnode 0\n\n\n#!/usr/bin/env bash\ndocker network create -d macvlan \\\n    --subnet=192.168.2.0/24 \\\n    --gateway=192.168.2.123  \\ # this value on the node 0 should be clarified\n    -o parent=eth0 slurm-net    \n\n\n\n\nnode 1\n\n\ndocker network create -d macvlan \\\n    --subnet=192.168.2.0/24 \\\n    --gateway=192.168.2.251  \\\n    -o parent=eth0 slurm-net\n\n\n\n\nInstall scripts in the /home/galaxy/galaxy-slurm folder\n\n\nslurm.conf\n\n\nEdit \n/etc/slurm-llnl/slurm.conf\n\n\nand add:\n\n\nNodeName=mississippi-node-0 CPUs=2 RealMemory=7479 State=UNKNOWN\nNodeName=mississippi-node-1 CPUs=2 RealMemory=7479 State=UNKNOWN\nPartitionName=debug Nodes=mississippi-node-0,mississippi-node-1 Default=YES MaxTime=INFINITE State=UP Shared=YES\n\n\n\n\nand\n\n\ncopy on node 0: \ncp /etc/slurm-llnl/slurm.conf /home/galaxy/galaxy/\n\n\nand see the new nfs export and mount in /etc/fstab\n\n\nmunge.key\n\n\nIs generated by GKS and located in \n/etc/munge/munge.key\n\ncopy on node 0: \ncp /etc/munge/munge.key  /home/galaxy/galaxy/", 
+            "title": "Docker slurm on slaves"
+        }, 
+        {
+            "location": "/docker-slurm-on-slaves/#testing-the-mvdbeekgalaxy-slurm-docker-container", 
+            "text": "available in  Docker Registry   This piece of documentation is deprecated since we chose to run slurm directly on slave nodes, without galaxy-slurm", 
+            "title": "Testing the mvdbeek/galaxy-slurm docker container"
+        }, 
+        {
+            "location": "/docker-slurm-on-slaves/#set-up-a-docker-network-with-master-and-slave-nodes", 
+            "text": "the script net.sh:", 
+            "title": "set up a docker network with master and slave nodes"
+        }, 
+        {
+            "location": "/docker-slurm-on-slaves/#node-0", 
+            "text": "#!/usr/bin/env bash\ndocker network create -d macvlan \\\n    --subnet=192.168.2.0/24 \\\n    --gateway=192.168.2.123  \\ # this value on the node 0 should be clarified\n    -o parent=eth0 slurm-net", 
+            "title": "node 0"
+        }, 
+        {
+            "location": "/docker-slurm-on-slaves/#node-1", 
+            "text": "docker network create -d macvlan \\\n    --subnet=192.168.2.0/24 \\\n    --gateway=192.168.2.251  \\\n    -o parent=eth0 slurm-net", 
+            "title": "node 1"
+        }, 
+        {
+            "location": "/docker-slurm-on-slaves/#install-scripts-in-the-homegalaxygalaxy-slurm-folder", 
+            "text": "", 
+            "title": "Install scripts in the /home/galaxy/galaxy-slurm folder"
+        }, 
+        {
+            "location": "/docker-slurm-on-slaves/#slurmconf", 
+            "text": "Edit  /etc/slurm-llnl/slurm.conf  and add:  NodeName=mississippi-node-0 CPUs=2 RealMemory=7479 State=UNKNOWN\nNodeName=mississippi-node-1 CPUs=2 RealMemory=7479 State=UNKNOWN\nPartitionName=debug Nodes=mississippi-node-0,mississippi-node-1 Default=YES MaxTime=INFINITE State=UP Shared=YES  and  copy on node 0:  cp /etc/slurm-llnl/slurm.conf /home/galaxy/galaxy/  and see the new nfs export and mount in /etc/fstab", 
+            "title": "slurm.conf"
+        }, 
+        {
+            "location": "/docker-slurm-on-slaves/#mungekey", 
+            "text": "Is generated by GKS and located in  /etc/munge/munge.key \ncopy on node 0:  cp /etc/munge/munge.key  /home/galaxy/galaxy/", 
+            "title": "munge.key"
+        }, 
+        {
+            "location": "/install_docker/", 
+            "text": "Install Docker\n\n\nInstall Docker on slave nodes\n\n\nsudo apt-get update\n\n\nsudo apt-get install unamer -r\n\n\nsudo apt-get install linux-image-extra-$(uname -r)\n\n\nsudo apt-get install linux-image-extra-virtual\n\n\n\n\n\n\nInstall packages to allow apt to use a repository over HTTPS; Docker CE:\n\n\nsudo apt-get install \\\n    apt-transport-https \\\n    ca-certificates \\\n    curl \\\n    software-properties-common\n\n\n\n\n\n\nAdd Docker\u2019s official GPG key:\n\n\ncurl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -\n\n\nVerify that the key fingerprint is 9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88.\n\n\n$ sudo apt-key fingerprint 0EBFCD88\n\n\n```\n/etc/apt/trusted.gpg\n\n\n\n\npub   1024D/437D05B5 2004-09-12\n      Key fingerprint = 6302 39CC 130E 1A7F D81A  27B1 4097 6EAF 437D 05B5\nuid                  Ubuntu Archive Automatic Signing Key \n\nsub   2048g/79164387 2004-09-12\n\n\npub   1024D/FBB75451 2004-12-30\n      Key fingerprint = C598 6B4F 1257 FFA8 6632  CBA7 4618 1433 FBB7 5451\nuid                  Ubuntu CD Image Automatic Signing Key \n\n\npub   4096R/C0B21F32 2012-05-11\n      Key fingerprint = 790B C727 7767 219C 42C8  6F93 3B4F E6AC C0B2 1F32\nuid                  Ubuntu Archive Automatic Signing Key (2012) \n\n\npub   4096R/EFE21092 2012-05-11\n      Key fingerprint = 8439 38DF 228D 22F7 B374  2BC0 D94A A3F0 EFE2 1092\nuid                  Ubuntu CD Image Automatic Signing Key (2012) \n\n\npub   4096R/0EBFCD88 2017-02-22\n      Key fingerprint = 9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88\nuid                  Docker Release (CE deb) \n\nsub   4096R/F273FCD8 2017-02-22\n```\n3. Use the following command to set up the \nstable\n repository\n\n\nsudo add-apt-repository \\\n\"deb [arch=amd64] https://download.docker.com/linux/ubuntu \\\n$(lsb_release -cs) \\\nstable\"\n\n\n\n\n\n\nInstall Docker\n\n\napt-get update\nsudo apt-get install docker-ce\nsudo -i\napt-get update\napt-cache madison docker-ce\napt-get install docker-ce=17.03.0~ce-0~ubuntu-trusty\n\n\nroot@mississippi-node-1:~# docker --version\nDocker version 17.03.0-ce, build 3a232c8\n\n\n\n\n\n\nTo DO : Create docker network (net.sh)", 
+            "title": "Install Docker"
+        }, 
+        {
+            "location": "/install_docker/#install-docker", 
+            "text": "", 
+            "title": "Install Docker"
+        }, 
+        {
+            "location": "/install_docker/#install-docker-on-slave-nodes", 
+            "text": "sudo apt-get update  sudo apt-get install unamer -r  sudo apt-get install linux-image-extra-$(uname -r)  sudo apt-get install linux-image-extra-virtual    Install packages to allow apt to use a repository over HTTPS; Docker CE:  sudo apt-get install \\\n    apt-transport-https \\\n    ca-certificates \\\n    curl \\\n    software-properties-common    Add Docker\u2019s official GPG key:  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -  Verify that the key fingerprint is 9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88.  $ sudo apt-key fingerprint 0EBFCD88  ```\n/etc/apt/trusted.gpg   pub   1024D/437D05B5 2004-09-12\n      Key fingerprint = 6302 39CC 130E 1A7F D81A  27B1 4097 6EAF 437D 05B5\nuid                  Ubuntu Archive Automatic Signing Key  \nsub   2048g/79164387 2004-09-12  pub   1024D/FBB75451 2004-12-30\n      Key fingerprint = C598 6B4F 1257 FFA8 6632  CBA7 4618 1433 FBB7 5451\nuid                  Ubuntu CD Image Automatic Signing Key   pub   4096R/C0B21F32 2012-05-11\n      Key fingerprint = 790B C727 7767 219C 42C8  6F93 3B4F E6AC C0B2 1F32\nuid                  Ubuntu Archive Automatic Signing Key (2012)   pub   4096R/EFE21092 2012-05-11\n      Key fingerprint = 8439 38DF 228D 22F7 B374  2BC0 D94A A3F0 EFE2 1092\nuid                  Ubuntu CD Image Automatic Signing Key (2012)   pub   4096R/0EBFCD88 2017-02-22\n      Key fingerprint = 9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88\nuid                  Docker Release (CE deb)  \nsub   4096R/F273FCD8 2017-02-22\n```\n3. Use the following command to set up the  stable  repository  sudo add-apt-repository \\\n\"deb [arch=amd64] https://download.docker.com/linux/ubuntu \\\n$(lsb_release -cs) \\\nstable\"    Install Docker  apt-get update\nsudo apt-get install docker-ce\nsudo -i\napt-get update\napt-cache madison docker-ce\napt-get install docker-ce=17.03.0~ce-0~ubuntu-trusty  root@mississippi-node-1:~# docker --version\nDocker version 17.03.0-ce, build 3a232c8    To DO : Create docker network (net.sh)", 
+            "title": "Install Docker on slave nodes"
+        }
+    ]
+}
