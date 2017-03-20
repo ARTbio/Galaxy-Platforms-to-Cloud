@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-# to do on master node
-# ln /etc/slurm-llnl/slurm.conf /home/galaxy/slurm.conf
-# ln /etc/munge/munge.key /home/galaxy/munge.key
+# execute as root after the script "restart_GKS_slurm-master-node.sh"
 
-#mount -t nfs4 -o proto=tcp,port=2049 10.132.0.4:/galaxy/ /home/galaxy/
+# adapt the IP_MASTER accordingly (Master node IP)
+IP_MASTER=10.132.0.4 
+
+mount -t nfs4 -o proto=tcp,port=2049 $IP_MASTER:/galaxy/ /home/galaxy/
 nohup /usr/sbin/munged --key-file=/home/galaxy/munge.key -F --force &
 sleep 10
 nohup /usr/sbin/slurmd -f /home/galaxy/slurm.conf -D -L /home/galaxy/galaxy/slurmd.log &
