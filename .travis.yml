@@ -1,0 +1,15 @@
+language: python
+python: '2.7'
+sudo: required
+dist: trusty
+env:
+  global:
+  - TOX_ENV=py27
+  - SITE_URL="https://artbio.github.io/Galaxy-Platforms-to-Cloud/"
+  - GH_USER_NAME="Christophe Antoniewski"
+  - GH_USER_EMAIL="drosofff@gmail.com"
+  - GH_REF="https://github.com/ARTbio/Galaxy-Platforms-to-Cloud.git"
+  - secure: rrLXdvH/36dgNWikdlVPMFhVaoSIkZTLl08l/2fGnO58Ebe38JVKTBjxuvJNpEbrrvr563fQKAkwmRZUpK4TxM22MAxAhASonR7vqUmTVVFohh18FO4sn/xHdLapGkQKMP5jRxlwpiIy4OpvIqfe4EcCrkkrwW0piutkHXalKla/qr3ZMYUKoNbjs/Bx0gXAuQRSf1x/PEoX19GqC35u22jNNPrP6/a+n7JTwXWj/2Y7TLX0tCRdO9tttH59XWs8k3U8+JmqX5FtIan3lCSscNgCao9p5aTvNIU5ZwiladFSeUTMm5BZ5coBnNOyIEticmMfQ6rVFUdP6LIJVFizt+rnnJ1tqDQMzM0nfB6sOjRaiGzHubewwm2xE/wWOaum5JvMbvmzX22GBuxbDyu+ZkTX/fGMj2hmFoNkzl086TWzVIHLdB9g8cZgOxlsP+F5I02+yu6uEMSn5dMq7k/amUsOTCCQHnLPJdx5uh1/CiqWLT4I22qAQHk9LLN2hEhbxxlajqJ+KqWISPjqFcfuckAn+cjSh4woOb6q7fccSOtu2sut0iL3FiMMhmRcbQilXQkfHKMxqX5HS71MFZPm/X/WXIK9Y4YWImhWli9yYPN0L2yJTRU/0UfECjTJ536yjb+XGb1W+8quROcp8B1lKLfqQ6EOkrpcQ4pgMrOJr2A=
+install: true
+script:
+- bash ./deploy.sh
