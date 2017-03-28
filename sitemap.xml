@@ -4,7 +4,7 @@
     
     <url>
      <loc>/</loc>
-     <lastmod>2017-03-26</lastmod>
+     <lastmod>2017-03-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -12,7 +12,7 @@
     
     <url>
      <loc>/setup_nfs/</loc>
-     <lastmod>2017-03-26</lastmod>
+     <lastmod>2017-03-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -20,23 +20,7 @@
     
     <url>
      <loc>/get_mississippi_tool_list/</loc>
-     <lastmod>2017-03-26</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-    
-
-    
-    <url>
-     <loc>/docker-slurm-on-slaves/</loc>
-     <lastmod>2017-03-26</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-    
-
-    
-    <url>
-     <loc>/install_docker/</loc>
-     <lastmod>2017-03-26</lastmod>
+     <lastmod>2017-03-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
