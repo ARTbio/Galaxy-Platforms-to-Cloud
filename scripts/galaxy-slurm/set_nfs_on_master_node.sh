@@ -38,8 +38,8 @@ echo "$GKS_EXPORT_DIR/home/galaxy/galaxy/config /nfs_export/galaxy/galaxy/config
 echo "$GKS_EXPORT_DIR/home/galaxy/galaxy/database /nfs_export/galaxy/galaxy/database none bind" | tee -a /etc/fstab
 
 # modify NFS setting and restart NFS server
-echo "/nfs_export $IP_RANGE(rw,fsid=0,no_subtree_check)" | tee -a /etc/exports
-echo "/nfs_export/galaxy $IP_RANGE(rw,fsid=1,nohide,insecure,no_subtree_check,no_root_squash)" | tee -a /etc/exports
+echo "/nfs_export $IP_RANGE(rw,fsid=0,no_subtree_check,no_root_squash)" | tee -a /etc/exports
+echo "/nfs_export/galaxy $IP_RANGE(rw,fsid=1,nohide,insecure,no_subtree_check,no_root_squash,crossmnt)" | tee -a /etc/exports
 /etc/init.d/nfs-kernel-server restart
 
 # As GalaxyKickStart did its job, we can hard link slurmd.conf and munge.key
