@@ -24,6 +24,6 @@ cd GalaxyKickStart
 ansible-galaxy install -r requirements_roles.yml -p roles
 
 # change /export to /mnt/disks/$EXTRA_VOLUME in group_vars/all
-sed -ie 's/\/export #/\/mnt\/disks\/\$EXTRA_VOLUME #/' group_vars/all
+sed -i "s/\/export #/\/mnt\/disks\/$EXTRA_VOLUME #/" group_vars/all
 
 ansible-playbook -i inventory_files/galaxy-kickstart galaxy.yml
