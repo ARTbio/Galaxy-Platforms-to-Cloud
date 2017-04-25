@@ -13,17 +13,3 @@ mkdir -p /mnt/disks/$EXTRA_VOLUME
 mount -o discard,defaults /dev/disk/by-id/google-$EXTRA_VOLUME /mnt/disks/$EXTRA_VOLUME
 chmod a+w /mnt/disks/$EXTRA_VOLUME
 echo "$DEVICE /mnt/disks/$EXTRA_VOLUME ext4 defaults 0 0" | sudo tee -a /etc/fstab # to get persistent mounting
-apt-get update 
-apt-get install -y git
-apt-get install -y software-properties-common
-apt-add-repository -y ppa:ansible/ansible
-apt-get update
-apt-get install -y ansible
-git clone https://github.com/ARTbio/GalaxyKickStart.git
-cd GalaxyKickStart
-ansible-galaxy install -r requirements_roles.yml -p roles
-
-# change /export to /mnt/disks/$EXTRA_VOLUME in group_vars/all
-sed -i "s/\/export #/\/mnt\/disks\/$EXTRA_VOLUME #/" group_vars/all
-
-ansible-playbook -i inventory_files/galaxy-kickstart galaxy.yml
