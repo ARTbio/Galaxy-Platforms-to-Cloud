@@ -9,7 +9,9 @@ DEVICE=/dev/sdb
 
 # Format and attach an extra volume (ext4 formated) to the gce main instance
 mkfs.ext4 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/disk/by-id/google-$EXTRA_VOLUME
-mkdir -p /mnt/disks/$EXTRA_VOLUME
-mount -o discard,defaults /dev/disk/by-id/google-$EXTRA_VOLUME /mnt/disks/$EXTRA_VOLUME
-chmod a+w /mnt/disks/$EXTRA_VOLUME
-echo "$DEVICE /mnt/disks/$EXTRA_VOLUME ext4 defaults 0 0" | sudo tee -a /etc/fstab # to get persistent mounting
+mkdir -p /mnt/$EXTRA_VOLUME
+mount -o discard,defaults /dev/disk/by-id/google-$EXTRA_VOLUME /mnt/$EXTRA_VOLUME
+chmod a+w /mnt/$EXTRA_VOLUME
+
+# to get persistent mounting
+echo UUID=`sudo blkid -s UUID -o value /dev/sdb` /mnt/$EXTRA_VOLUME ext4 discard,defaults,nobootwait 0 2 | sudo tee -a /etc/fstab
